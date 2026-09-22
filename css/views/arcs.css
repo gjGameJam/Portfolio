@@ -1,0 +1,73 @@
+/* Arc controls at the left and right edges step between areas. Each arc is
+   tinted (data-tone) with the color of the area it moves into, so it says where
+   it goes before it is used. They sit outside the stage so they can out-stack
+   the scrim. js/views/arcs.js centres them on the visible band every frame, using
+   half of the 148px height below. */
+
+.arc {
+  position: fixed;
+  top: 50%;
+  margin-top: -74px;
+  width: 46px;
+  height: 148px;
+  padding: 0;
+  border: 1px solid rgb(var(--tone) / .4784);
+  backdrop-filter: blur(6px);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  z-index: 22;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .35s ease, border-color .45s ease, box-shadow .45s ease;
+}
+.arc.is-shown { opacity: 1; pointer-events: auto; }
+
+.arc--left {
+  left: 0;
+  right: auto;
+  border-radius: 0 999px 999px 0;
+  border-left: none;
+  background: linear-gradient(to right, rgb(var(--tone) / .1412), rgb(var(--surface) / .88) 78%);
+  box-shadow: 6px 0 26px rgb(var(--tone) / .1216);
+}
+.arc--left:hover {
+  background: linear-gradient(to right, rgb(var(--tone) / .2392), rgb(var(--surface) / .9) 82%);
+  border-color: rgb(var(--tone) / .8);
+  box-shadow: 8px 0 34px rgb(var(--tone) / .2196);
+}
+
+/* the right arc rides inboard of the desktop drawer; js sets its `right` */
+.arc--right {
+  left: auto;
+  right: 0;
+  border-radius: 999px 0 0 999px;
+  border-right: none;
+  background: linear-gradient(to left, rgb(var(--tone) / .1412), rgb(var(--surface) / .88) 78%);
+  box-shadow: -6px 0 26px rgb(var(--tone) / .1216);
+}
+.arc--right:hover {
+  background: linear-gradient(to left, rgb(var(--tone) / .2392), rgb(var(--surface) / .9) 82%);
+  border-color: rgb(var(--tone) / .8);
+  box-shadow: -8px 0 34px rgb(var(--tone) / .2196);
+}
+
+.arc__glow {
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(circle at 0% 50%, rgb(var(--tone) / .2392), transparent 74%);
+}
+.arc--right .arc__glow {
+  background: radial-gradient(circle at 100% 50%, rgb(var(--tone) / .2392), transparent 74%);
+}
+
+.arc__chevron {
+  position: relative;
+  font: 400 32px/1 var(--font-body);
+  color: var(--ink-heading);
+  transform: translateX(-2px);
+  transition: color .45s ease;
+}
+.arc--right .arc__chevron { transform: translateX(2px); }

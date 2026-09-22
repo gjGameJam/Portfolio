@@ -1,0 +1,52 @@
+/* The site theme: Organic inverted onto a dark-green ground. Same type, radii and
+   spacing as css/tokens.css; the role tokens are re-pointed and the site's shared
+   colors are named here. A few one-off surface tints (node pills, the hover card,
+   the drawer gradient's end) stay literal in the one rule that uses them. */
+
+:root {
+  --color-bg: #0c130e;
+  --color-surface: #14211a;
+  --color-text: #e6efe4;
+  --color-divider: rgba(230, 239, 228, .12);
+  --color-ink-soft: #9db3a5;
+  --color-ink-mid: #b9cabc;
+  --color-sage: #8fd6b0;
+
+  /* Ink, brightest to dimmest */
+  --ink-bright: #f0f6ec;
+  --ink-heading: #eef5e9;
+  --ink-peek: #cfdcd0;
+  --ink-button: #dbe7dc;
+  --ink-node: #cbdacd;
+  --ink-copy: #b5c7b8;
+  --ink-faint: #93a897;
+  --ink-tag: #8fa895;
+  --ink-label: #7f9a86;
+  --ink-muted: #6f8a78;
+  --ink-on-accent: #160e07;
+  --link-hover: #b6e6cb;
+
+  /* RGB channels, for alpha mixes such as rgb(var(--line) / .12) */
+  --line: 230 239 228;
+  --surface: 20 33 26;
+  --ground: 12 19 14;
+
+  /* Area colors, as channels. A project in two areas uses the shared tone. */
+  --area-ai: 110 201 164;
+  --area-games: 184 201 110;
+  --area-cyber: 95 182 201;
+  --area-shared: 198 113 57;
+
+  /* Drawer geometry. These are only the pre-JavaScript defaults: js/app.js
+     overwrites both on :root at boot from js/config.js (DRAWER_MAX_W, DRAWER_VW,
+     SHEET_VH), which the camera math also uses. Change them there. */
+  --drawer-width: min(420px, 92vw);
+  --sheet-height: 58vh;
+}
+
+/* Anything tinted by an area reads --tone. Set data-tone on the element or an
+   ancestor. Alphas are written as n/255 so they match the original hex pairs. */
+[data-tone="ai"] { --tone: var(--area-ai); }
+[data-tone="games"] { --tone: var(--area-games); }
+[data-tone="cyber"] { --tone: var(--area-cyber); }
+[data-tone="shared"] { --tone: var(--area-shared); }

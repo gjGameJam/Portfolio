@@ -1,0 +1,74 @@
+/* The List view: every area's projects as columns of rows, in the same authored
+   order the drawer's area list uses. */
+
+.list-view {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  padding: 22px 44px 60px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 38px;
+  align-content: start;
+  overflow-y: auto;
+}
+[data-compact] .list-view { padding-inline: 20px; }
+
+.list-group {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.list-group__head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.list-group__name {
+  font: 400 20px/1 var(--font-heading);
+  color: rgb(var(--tone));
+  margin: 0;
+}
+
+.list-group__count {
+  font: 500 10px/1 var(--font-body);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-label);
+}
+
+.list-group__items {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+/* Tier 3 is the default row; tiers 2 and 1 step up in weight */
+.list-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid rgb(var(--line) / .10);
+  color: var(--color-ink-mid);
+  font: 400 14px/1.2 var(--font-body);
+  text-align: left;
+  transition: background .2s ease, border-color .2s ease;
+}
+.list-row--tier2 { color: var(--ink-node); font: 500 15px/1.2 var(--font-body); }
+.list-row--tier1 { color: var(--ink-bright); font: 400 18px/1.2 var(--font-heading); }
+.list-row:hover { background: rgb(var(--line) / .06); color: var(--ink-bright); }
+
+.list-row__also {
+  font: 400 11px/1 var(--font-body);
+  color: var(--ink-label);
+  margin-left: auto;
+  white-space: nowrap;
+}

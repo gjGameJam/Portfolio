@@ -1,0 +1,59 @@
+/* Labels and pills. Toned variants read --tone from a data-tone attribute
+   (see css/theme.css); the alphas are n/255 of the original hex pairs. */
+
+/* Organic tag, sage ramp. The ramp is authored for a light ground, so on this
+   dark one the steps swap ends. */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+.tag-accent-2 { background: var(--color-accent-2-800); color: var(--color-accent-2-200); }
+
+/* Small uppercase outline tag, used on list rows */
+.mini-tag {
+  font: 500 9.5px/1 var(--font-body);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ink-tag);
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid rgb(var(--line) / .12);
+}
+
+/* Area-toned chips */
+.chip {
+  border-radius: 999px;
+  color: rgb(var(--tone));
+}
+
+/* "11 projects" above an area's list */
+.chip--count {
+  font: 600 10px/1 var(--font-body);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  padding: 7px 12px;
+  border: 1px solid rgb(var(--tone) / .2667);
+  background: rgb(var(--tone) / .0784);
+}
+
+/* The area a project belongs to, above its title */
+.chip--area {
+  padding: 6px 14px;
+  background: rgb(var(--tone) / .1216);
+  border: 1px solid rgb(var(--tone) / .3333);
+  font: 600 10px/1.4 var(--font-body);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+/* One of several areas a shared project connects */
+.chip--pill {
+  padding: 7px 14px;
+  background: rgb(var(--tone) / .0863);
+  border: 1px solid rgb(var(--tone) / .2667);
+  font: 500 12px/1 var(--font-body);
+}

@@ -1,0 +1,53 @@
+/* The drawer and its scrim. One drawer holds either an area's project list or a
+   project's detail. On desktop it slides in from the right; on compact it is a
+   bottom sheet. js/views/drawer.js writes the slide (transform) every frame. */
+
+.scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 10, 7, .28);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 20;
+}
+.scrim.is-active { pointer-events: auto; }
+/* on compact the scrim covers the graph during an area, and a pinch there zooms out
+   of the area (js/lib/pinch.js) rather than the page */
+[data-compact] .scrim { touch-action: pan-x pan-y; }
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: var(--drawer-width);
+  background: linear-gradient(180deg, var(--color-surface) 0%, #101a13 100%);
+  border-left: 1px solid rgb(var(--line) / .12);
+  box-shadow: -30px 0 70px rgba(0, 0, 0, .5);
+  border-top-left-radius: var(--radius-lg);
+  border-bottom-left-radius: var(--radius-lg);
+  transform: translateX(104%);
+  overflow-y: auto;
+  z-index: 21;
+}
+
+[data-compact] .drawer {
+  top: auto;
+  left: 0;
+  width: auto;
+  height: var(--sheet-height);
+  border-left: none;
+  border-top: 1px solid rgb(var(--line) / .12);
+  box-shadow: 0 -30px 70px rgba(0, 0, 0, .5);
+  border-bottom-left-radius: 0;
+  border-top-right-radius: var(--radius-lg);
+  transform: translateY(104%);
+}
+
+/* The row above a drawer's heading: a chip on the left, close on the right */
+.drawer__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}

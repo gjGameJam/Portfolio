@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Flocking demo</title>
+<style>html,body{margin:0;padding:0;height:100%;overflow:hidden;background:transparent}</style>
+</head>
+<body>
+<!-- minimal demo: canvas + boid class with comments -->
+<div id="boid-wrapper" style="position:relative;
+            width:100%;
+            height:100%;
+            margin:auto;
+            overflow:hidden;
+            box-sizing:border-box;">
+    <!-- background canvas just for border -->
+    <canvas id="bg" style="position:absolute;
+                 top:0;left:0;
+                 width:100%;height:100%;
+                 z-index:0;display:block;"></canvas>
+    <!-- main canvas for boids -->
+    <canvas id="c" style="position:absolute;
+                 top:0;left:0;
+                 width:100%;height:100%;
+                 z-index:1;display:block;"></canvas>
+</div>
+
+<script>
+    // simple vector helper functions for math
+    const v = {
+        add: (a, b) => ({ x: a.x + b.x, y: a.y + b.y }), // add two vectors
+        sub: (a, b) => ({ x: a.x - b.x, y: a.y - b.y }), // subtract vectors
+        mul: (a, s) => ({ x: a.x * s, y: a.y * s }),    // multiply vector by scalar
+        len: a => Math.hypot(a.x, a.y),                 // get vector length
+        norm: a => { const L = Math.hypot(a.x, a.y) || 1; return { x: a.x / L, y: a.y / L }; } // normalize
+    };
+
+    // boid class represents one triangle that moves
+    class Boid {
+        constructor(position, velocity, { h = 18, w = 8, fill = '#111', stroke = null } = {}) {
+            // store position and velocity
+            this.pos = { x: position.x, y: position.y };
+            this.vel = { x: velocity.x, y: velocity.y };
+            this.h = h; this.w = w; this.fill = fill; this.stroke = stroke;
+
+            // local triangle points, apex faces +x
+            const hx = h / 2, bx = -h / 2;
+            this.local = [
+                { x: hx, y: 0 },      // tip of triangle
+                { x: bx, y: -w / 2 }, // left rear
+                { x: bx, y: w / 2 }   // right rear
+            ];
+        }
+
+        // move boid by velocity
+        update(dt = 1) {
+            this.pos.x += this.vel.x * dt;
+            this.pos.y += this.vel.y * dt;
+        }
+
+        // draw boid on canvas
+        draw(ctx) {
+            const heading = v.len(this.vel) > 1e-6 ? v.norm(this.vel) : { x: 1, y: 0 }; // avoid zero vector
+            const ang = Math.atan2(heading.y, heading.x);
+            const cosA = Math.cos(ang), sinA = Math.sin(ang);
+
+            // rotate local points to world position
+            const pts = this.local.map(p => ({
+                x: this.pos.x + (p.x * cosA - p.y * sinA),
+                y: this.pos.y + (p.x * sinA + p.y * cosA)
+            }));
+
+            // draw triangle
+            ctx.beginPath();
+            ctx.moveTo(pts[0].x, pts[0].y);
+            ctx.lineTo(pts[1].x, pts[1].y);
+            ctx.lineTo(pts[2].x, pts[2].y);
+            ctx.closePath();
+            if (this.fill) { ctx.fillStyle = this.fill; ctx.fill(); }
+            if (this.stroke) { ctx.strokeStyle = this.stroke; ctx.stroke(); }
+        }
+
+        // keep direction but set speed
+        setSpeed(speed) {
+            const dir = v.norm(this.vel);
+            this.vel = v.mul(dir, speed);
+        }
+
+        // set heading angle, keep speed
+        setHeading(angle) {
+            const s = v.len(this.vel);
+            this.vel = { x: Math.cos(angle) * s, y: Math.sin(angle) * s };
+        }
+    }
+
+    (function demo() {
+        // get canvas and context
+        const canvas = document.getElementById('c');
+        const dpi = window.devicePixelRatio || 1;
+        const bg = document.getElementById('bg');
+        const bctx = bg.getContext('2d');
+
+        // draw border once on background canvas
+        bctx.strokeStyle = '#444';
+        bctx.lineWidth = 1;
+        bctx.strokeRect(0.5, 0.5, bg.width - 1, bg.height - 1);
+
+        const ctx = canvas.getContext('2d');
+
+        // resize canvas to match screen
+        function resize() {
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = Math.round(rect.width * dpi);
+            canvas.height = Math.round(rect.height * dpi);
+            canvas.style.width = rect.width + 'px';
+            canvas.style.height = rect.height + 'px';
+            ctx.setTransform(dpi, 0, 0, dpi, 0, 0); // scale for retina
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        // create initial boids
+        const boids = [
+            new Boid({ x: 60, y: 60 }, { x: 1.6, y: 0.8 }, { h: 26, w: 10, fill: '#1f77b4' }),
+            new Boid({ x: 120, y: 100 }, { x: -1.2, y: 0.9 }, { h: 20, w: 8, fill: '#ff7f0e' }),
+            new Boid({ x: 200, y: 40 }, { x: 0.6, y: 1.6 }, { h: 22, w: 7, fill: '#2ca02c' })
+        ];
+
+        // array of colors for variety
+        const colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'];
+
+        // add 40 more random boids
+        for (let i = 0; i < 40; i++) {
+            const x = Math.random() * (canvas.width / dpi - 40) + 20; // avoid edges
+            const y = Math.random() * (canvas.height / dpi - 40) + 20;
+            const vx = (Math.random() - 0.5) * 3; // random velocity
+            const vy = (Math.random() - 0.5) * 3;
+            const h = 14 + Math.random() * 12; // random size
+            const w = 6 + Math.random() * 6;
+            const fill = colors[Math.floor(Math.random() * colors.length)];
+            boids.push(new Boid({ x, y }, { x: vx, y: vy }, { h, w, fill }));
+        }
+
+        // mouse tracking
+        let mouse = { x: 0, y: 0, active: false };
+        canvas.addEventListener('mouseenter', () => mouse.active = true);
+        canvas.addEventListener('mouseleave', () => mouse.active = false);
+        canvas.addEventListener('mousemove', e => {
+            const rect = canvas.getBoundingClientRect();
+            mouse.x = e.clientX - rect.left;
+            mouse.y = e.clientY - rect.top;
+        });
+
+        // settings object
+        const settings = { wrap: false };
+
+        // --- compute forces for each boid ---
+        function computeForces(b, boids, canvas, dpi, mouse, settings) {
+            const {
+                perception = 80,
+                separationDist = 25,
+                maxSpeed = 4.2,
+                maxForce = 2,
+                margin = 40,
+                wrap = false,
+                weights = { align: 0.03, cohesion: 0.02, separation: 0.25, mouseAvoid: 0.3, borderAvoid: 0.18 }
+            } = settings;
+
+            // accumulators for flocking
+            let align = { x: 0, y: 0 }, cohesion = { x: 0, y: 0 }, separation = { x: 0, y: 0 }, total = 0;
+
+            // loop through all boids
+            for (const other of boids) {
+                if (other === b) continue; // skip self
+                const dx = other.pos.x - b.pos.x;
+                const dy = other.pos.y - b.pos.y;
+                const d2 = dx * dx + dy * dy; // distance squared
+
+                if (d2 < perception * perception) { // within sight
+                    total++;
+                    align.x += other.vel.x;
+                    align.y += other.vel.y;
+                    cohesion.x += other.pos.x;
+                    cohesion.y += other.pos.y;
+
+                    if (d2 < separationDist * separationDist) { // too close
+                        const f = 1 - Math.sqrt(d2) / separationDist; // nonlinear falloff
+                        separation.x -= dx * f * 2;
+                        separation.y -= dy * f * 2;
+                    }
+                }
+            }
+
+            // average flocking vectors
+            if (total > 0) {
+                align.x /= total; align.y /= total;
+                cohesion.x = cohesion.x / total - b.pos.x;
+                cohesion.y = cohesion.y / total - b.pos.y;
+            }
+
+            // mouse avoidance
+            let mouseF = { x: 0, y: 0 };
+            if (mouse.active) {
+                const dx = b.pos.x - mouse.x, dy = b.pos.y - mouse.y;
+                const d2 = dx * dx + dy * dy;
+                const range = 120;
+                if (d2 < range * range) {
+                    const f = (1 - Math.sqrt(d2) / range) * 1.5; // make snappy
+                    mouseF.x = dx * f; mouseF.y = dy * f;
+                }
+            }
+
+            // wall steering
+            const w = canvas.width / dpi, h = canvas.height / dpi;
+            let borderF = { x: 0, y: 0 };
+            const steerStrength = 0.8;
+
+            if (!wrap) { // only if not wrapping
+                if (b.pos.x < margin) borderF.x += (margin - b.pos.x) / margin * steerStrength;
+                if (b.pos.x > w - margin) borderF.x -= (b.pos.x - (w - margin)) / margin * steerStrength;
+                if (b.pos.y < margin) borderF.y += (margin - b.pos.y) / margin * steerStrength;
+                if (b.pos.y > h - margin) borderF.y -= (b.pos.y - (h - margin)) / margin * steerStrength;
+            }
+
+            // combine all forces
+            let fx = align.x * weights.align + cohesion.x * weights.cohesion + separation.x * weights.separation + mouseF.x * weights.mouseAvoid + borderF.x * weights.borderAvoid;
+            let fy = align.y * weights.align + cohesion.y * weights.cohesion + separation.y * weights.separation + mouseF.y * weights.mouseAvoid + borderF.y * weights.borderAvoid;
+
+            const mag = Math.hypot(fx, fy);
+            if (mag > maxForce) { fx = (fx / mag) * maxForce; fy = (fy / mag) * maxForce; } // clamp force
+
+            b.vel.x += fx; b.vel.y += fy;
+
+            // limit speed
+            const spd = v.len(b.vel);
+            if (spd > maxSpeed) b.setSpeed(maxSpeed);
+
+            // keep boid inside canvas
+            if (wrap) {
+                const pad = 10;
+                if (b.pos.x > w + pad) b.pos.x = -pad;
+                if (b.pos.x < -pad) b.pos.x = w + pad;
+                if (b.pos.y > h + pad) b.pos.y = -pad;
+                if (b.pos.y < -pad) b.pos.y = h + pad;
+            } else {
+                const pad = 7; // soft clamp
+                if (b.pos.x < pad) b.pos.x = pad;
+                if (b.pos.x > w - pad) b.pos.x = w - pad;
+                if (b.pos.y < pad) b.pos.y = pad;
+                if (b.pos.y > h - pad) b.pos.y = h - pad;
+            }
+        }
+
+        // animation loop
+        let last = performance.now();
+        function frame(now) {
+            const dt = Math.min((now - last) / 16.6667, 4); // max dt to prevent jumps
+            last = now;
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // clear frame
+
+            for (const b of boids) {
+                computeForces(b, boids, canvas, dpi, mouse, settings); // update velocity
+                b.update(dt); // move
+                b.draw(ctx); // draw
+            }
+
+            requestAnimationFrame(frame); // loop
+        }
+        requestAnimationFrame(frame); // start loop
+    })();
+</script></body>
+</html>

@@ -1,0 +1,238 @@
+/* The graph view: the stage, the camera layer, edges, area hubs and project
+   nodes. Positions, the camera transform and the stage's dimming are written
+   every frame by js/views/graph.js; everything static or state-driven is here. */
+
+.stage {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  height: calc(100vh - 190px);
+  min-height: min(600px, calc(100vh - 180px));
+  margin: 0 12px 12px;
+}
+/* Compact pans freely to its hub, so the stage clips instead of the camera being clamped.
+   The stage fills whatever the page leaves (the page is exactly the visible height, see
+   css/layout/page.css), and nothing on it is the browser's to handle: a drag must not
+   scroll the page under the graph, and a pinch zooms out of the area (js/lib/pinch.js). */
+[data-compact] .stage {
+  min-height: 0;
+  overflow: hidden;
+  touch-action: none;
+}
+
+/* The camera is a transform on this one layer. The simulation underneath keeps
+   running in unchanged stage-pixel coordinates, so zooming never re-settles it. */
+.world {
+  position: absolute;
+  inset: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+/* ---- Edges ------------------------------------------------------------ */
+
+.edges {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+}
+
+/* --dim is set per edge: how far its node's area is from the one in focus */
+.edge {
+  stroke: rgb(var(--tone));
+  stroke-width: 1;
+  stroke-linecap: round;
+  opacity: calc(.3 * var(--dim, 1));
+  transition: opacity .25s ease, stroke-width .25s ease;
+}
+.edge.is-lit {
+  stroke-width: 1.9;
+  opacity: calc(.85 * var(--dim, 1));
+}
+
+/* ---- Hubs ------------------------------------------------------------- */
+
+/* Each hub is a zero-size box at its simulation point; children centre on it. */
+.hub {
+  position: absolute;
+  width: 0;
+  height: 0;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  z-index: 4;
+  transition: opacity .35s ease;
+}
+.hub.is-dimmed { opacity: .3; }
+
+.hub__halo {
+  position: absolute;
+  width: 210px;
+  height: 210px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgb(var(--tone) / .1804), transparent 66%);
+  animation: breathe 7s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.hub__disc {
+  position: absolute;
+  width: 124px;
+  height: 124px;
+  border-radius: 999px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: radial-gradient(120% 120% at 30% 20%, rgba(255, 255, 255, .06), rgb(var(--ground) / .86));
+  border: 1.5px solid rgb(var(--tone) / .4);
+  box-shadow: 0 0 22px rgba(0, 0, 0, .35);
+  transition: width .3s ease, height .3s ease, border-color .3s ease, box-shadow .3s ease;
+}
+.hub.is-lit .hub__disc {
+  width: 138px;
+  height: 138px;
+  border-color: rgb(var(--tone) / .8);
+  box-shadow: 0 0 44px rgb(var(--tone) / .2667);
+}
+
+/* The label is sized to the disc (--hub-font, --hub-font-lit are computed in
+   js/views/graph.js from the 124/138px disc sizes above, less 26px, which is also
+   this max-width). The only permitted break is the explicit one after a slash. */
+.hub__title {
+  font: 400 var(--hub-font)/1.08 var(--font-heading);
+  color: var(--ink-bright);
+  text-align: center;
+  white-space: pre-line;
+  max-width: 98px;
+  min-width: 0;
+  word-break: keep-all;
+  overflow-wrap: normal;
+}
+.hub.is-lit .hub__title {
+  font-size: var(--hub-font-lit);
+  max-width: 112px;
+}
+
+/* ---- Project nodes ---------------------------------------------------- */
+
+.node {
+  position: absolute;
+  width: 0;
+  height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  z-index: 5;
+  transition: opacity .35s ease;
+}
+.node.is-faded { opacity: .12; }
+.node.is-hover,
+.node.is-selected { z-index: 9; }
+
+.hub.is-hidden,
+.node.is-hidden { opacity: 0; pointer-events: none; }
+
+/* Tier 3 is the default; tier 2 and the featured tier 1 step up in weight */
+.node__pill {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+  padding: 5px 12px 5px 8px;
+  border-radius: 999px;
+  background: rgba(18, 29, 21, .55);
+  border: 1px solid rgb(var(--line) / .09);
+  box-shadow: none;
+  backdrop-filter: blur(6px);
+  transition: background .25s ease, border-color .25s ease, box-shadow .25s ease;
+}
+.node--tier2 .node__pill {
+  padding: 7px 15px 7px 10px;
+  background: rgba(19, 31, 23, .72);
+  border-color: rgb(var(--tone) / .2);
+}
+.node--tier1 .node__pill {
+  padding: 10px 20px 10px 12px;
+  background: rgba(20, 33, 24, .86);
+  border-color: rgb(var(--tone) / .4);
+}
+.node.is-hover .node__pill,
+.node.is-selected .node__pill {
+  background: rgba(18, 29, 21, .94);
+  border-color: rgb(var(--tone) / .6667);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, .45);
+}
+
+/* A shared project's dot is split between its areas' colors via --dot-fill */
+.node__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  flex: none;
+  background: var(--dot-fill, rgb(var(--tone)));
+  box-shadow: 0 0 8px rgb(var(--tone) / .8);
+  transition: all .25s ease;
+}
+.node--tier2 .node__dot { width: 11px; height: 11px; }
+.node--tier1 .node__dot { width: 14px; height: 14px; }
+.node.is-hover .node__dot,
+.node.is-selected .node__dot {
+  width: 15px;
+  height: 15px;
+  box-shadow: 0 0 16px rgb(var(--tone) / .8);
+}
+
+.node__label {
+  font: 400 12px/1 var(--font-body);
+  color: var(--ink-faint);
+  max-width: 200px;
+  opacity: 1;
+  overflow: hidden;
+  transition: max-width .3s ease, opacity .25s ease, color .25s ease;
+}
+.node--tier2 .node__label { font: 500 14px/1 var(--font-body); color: var(--ink-node); }
+.node--tier1 .node__label { font: 400 19px/1 var(--font-heading); color: var(--ink-bright); }
+.node.is-hover .node__label,
+.node.is-selected .node__label { color: var(--ink-bright); }
+
+/* The hover card. Its left offset is clamped into the stage by js/views/graph.js,
+   which assumes this 236px width. */
+.peek {
+  position: absolute;
+  top: 22px;
+  transform: translateY(-6px);
+  width: 236px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 13px 15px 14px;
+  border-radius: 18px;
+  background: rgba(14, 23, 17, .95);
+  border: 1px solid rgb(var(--line) / .12);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .5);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .2s ease, transform .25s ease;
+}
+.node.is-hover .peek { transform: translateY(0); }
+.node.is-hover:not(.is-selected) .peek.has-blurb { opacity: 1; }
+
+.peek__area {
+  font: 600 10px/1 var(--font-body);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-label);
+}
+
+.peek__blurb {
+  font: 400 13px/1.45 var(--font-body);
+  color: var(--ink-peek);
+  text-wrap: pretty;
+}

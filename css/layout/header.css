@@ -1,0 +1,124 @@
+/* Page header: the heading and subtitle, the Projects/Contact tabs and the
+   Graph/List toggle.
+
+   On compact the drawer is open whenever the graph is inside an area, and its
+   scrim catches every click, so the header and tabs are raised above it (the
+   scrim is z-index 20). The tabs stay one above the header, whose full-width box
+   would otherwise cover them.
+
+   Compact also stacks the header to leave the hub room above the sheet: the tabs
+   and the Graph/List toggle share a top row, the heading sits under them on one
+   line, and js/views/header.js hides the subtitle on Projects. */
+
+.top-tabs {
+  position: absolute;
+  top: 38px;
+  right: 44px;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+[data-compact] .top-tabs {
+  z-index: 22;
+  top: 22px;
+  left: 20px;
+  right: auto;
+  gap: 10px;
+}
+
+.top-tabs__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: rgb(var(--line) / .22);
+}
+
+.top-tabs__tab {
+  padding: 2px 0;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  font: 400 clamp(15px, 1.6vw, 19px)/1 var(--font-heading);
+  color: var(--ink-muted);
+  border-bottom: 2px solid transparent;
+  transition: color .25s ease, border-color .25s ease;
+}
+.top-tabs__tab.is-active {
+  color: var(--ink-heading);
+  border-bottom-color: var(--color-sage);
+}
+
+.site-header {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+  flex-wrap: wrap;
+  padding: 34px 44px 10px;
+}
+[data-compact] .site-header {
+  z-index: 21;
+  padding: 64px 20px 8px;
+}
+
+.site-header__titles {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.site-header__heading {
+  margin: 0;
+  font: 400 clamp(28px, 4.4vw, 58px)/1.02 var(--font-heading);
+  color: var(--ink-heading);
+  letter-spacing: -.01em;
+  white-space: pre-line;
+}
+
+.site-header__subtitle {
+  margin: 0;
+  font: 400 clamp(12px, 1.35vw, 16px)/1.4 var(--font-body);
+  color: var(--color-ink-soft);
+}
+
+.mode-toggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgb(var(--line) / .04);
+  border: 1px solid rgb(var(--line) / .08);
+  margin-bottom: 4px;
+}
+/* level with the tabs: .site-header is the containing block, and starts at the page top */
+[data-compact] .mode-toggle {
+  position: absolute;
+  top: 14px;
+  right: 20px;
+  margin: 0;
+}
+
+.mode-toggle__option {
+  padding: 5px 14px;
+  cursor: pointer;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  font: 500 12px/1 var(--font-body);
+  letter-spacing: .06em;
+  color: var(--ink-muted);
+  transition: color .2s ease, background .2s ease, border-color .2s ease;
+}
+/* narrower so the top row still clears the tabs on a 320px phone */
+[data-compact] .mode-toggle__option { padding-inline: 10px; }
+.mode-toggle__option.is-active {
+  border-color: rgb(var(--line) / .22);
+  background: rgb(var(--line) / .08);
+  color: var(--ink-heading);
+}

@@ -1,0 +1,14 @@
+/* Small text styles shared across views. */
+
+/* Uppercase label above a group: "Email", "Gallery", "Connected areas" */
+.eyebrow {
+  font: 600 10px/1 var(--font-body);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ink-label);
+}
+
+.caption {
+  font: 400 12px/1.45 var(--font-body);
+  color: var(--ink-label);
+}

@@ -1,0 +1,15 @@
+/* A round, outlined icon button: the drawer's close control. */
+
+.icon-button {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgb(var(--line) / .14);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-ink-soft);
+  font: 400 16px/1 var(--font-body);
+  cursor: pointer;
+}
+.icon-button:hover { background: rgb(var(--line) / .08); color: var(--ink-heading); }

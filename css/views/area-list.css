@@ -1,0 +1,92 @@
+/* The drawer's area list: one area's projects as rows with a thumbnail, blurb and
+   the first few tags. The container carries the area's data-tone. */
+
+.area-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 30px 26px 36px;
+}
+
+.area-list__title {
+  margin: 0;
+  font: 400 30px/1.08 var(--font-heading);
+  color: var(--ink-heading);
+  letter-spacing: -.01em;
+}
+
+.area-list__items {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.area-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  width: 100%;
+  padding: 11px 13px;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid rgb(var(--line) / .10);
+  text-align: left;
+  transition: background .2s ease, border-color .2s ease;
+}
+.area-row:hover {
+  background: rgb(var(--line) / .06);
+  border-color: rgb(var(--tone) / .3333);
+}
+
+/* The first still image, or a tile with the project's initials */
+.area-row__thumb {
+  width: 58px;
+  height: 58px;
+  flex: none;
+  border-radius: 11px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgb(var(--tone) / .2);
+  background: linear-gradient(140deg, rgb(var(--tone) / .149), rgb(var(--ground) / .9));
+}
+
+.area-row__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.area-row__initials {
+  font: 600 16px/1 var(--font-body);
+  letter-spacing: .06em;
+  color: rgb(var(--tone));
+}
+
+.area-row__text {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+  flex: 1;
+}
+
+.area-row__name {
+  font: 400 17px/1.2 var(--font-heading);
+  color: var(--ink-heading);
+}
+
+.area-row__blurb {
+  font: 400 12.5px/1.5 var(--font-body);
+  color: var(--color-ink-soft);
+  text-wrap: pretty;
+}
+
+.area-row__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 2px;
+}

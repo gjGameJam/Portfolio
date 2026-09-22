@@ -1,0 +1,85 @@
+/* The Contact view: portrait beside the About text, the email card, the link
+   buttons and the footer. The two columns wrap to one on narrow screens. */
+
+.contact-view {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 44px 60px;
+}
+[data-compact] .contact-view { padding-inline: 20px; }
+
+.contact {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  max-width: 920px;
+}
+
+.contact__portrait {
+  width: 260px;
+  max-width: 100%;
+  /* The crop's own ratio, so nothing is cut a second time here. It tracks
+     about.portrait.crop in content/site.json: widened right on 2026-09-19 from
+     431/665 (the Wix crop) so the neon sign reads. */
+  aspect-ratio: 838 / 1089;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgb(var(--line) / .12);
+  display: block;
+  flex: none;
+}
+
+.contact__body {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  flex: 1;
+  min-width: min(280px, 100%);
+}
+
+.contact__bio {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.contact__paragraph {
+  margin: 0;
+  font: 400 15px/1.68 var(--font-body);
+  color: var(--ink-copy);
+  text-wrap: pretty;
+}
+
+.contact__card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 26px 28px;
+  border-radius: var(--radius-lg);
+  background: rgb(var(--surface) / .7);
+  border: 1px solid rgb(var(--line) / .10);
+}
+
+.contact__email {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+/* the address is one unbreakable word, wider than the card on the narrowest phones */
+.contact__email-link { font: 400 20px/1.2 var(--font-heading); overflow-wrap: anywhere; }
+
+.contact__links {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.contact__footer {
+  margin: 0;
+  font: 400 12px/1.5 var(--font-body);
+  color: var(--ink-muted);
+}

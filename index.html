@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- data-site slots are filled from content/site.json by content/tools/gen_site_data.py -->
+  <title data-site="page-title">Grant Benson: Computer Science Portfolio</title>
+  <meta name="description" data-site="description" content="Projects across AI/ML, games and simulation, and cybersecurity.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caprasimo:wght@400&family=Figtree:wght@400;600;700&display=swap">
+
+  <!-- Cascade order: tokens, theme, element defaults, components, layout, views -->
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components/button.css">
+  <link rel="stylesheet" href="css/components/icon-button.css">
+  <link rel="stylesheet" href="css/components/tags.css">
+  <link rel="stylesheet" href="css/components/typography.css">
+  <link rel="stylesheet" href="css/layout/page.css">
+  <link rel="stylesheet" href="css/layout/header.css">
+  <link rel="stylesheet" href="css/layout/drawer.css">
+  <link rel="stylesheet" href="css/views/graph.css">
+  <link rel="stylesheet" href="css/views/arcs.css">
+  <link rel="stylesheet" href="css/views/list.css">
+  <link rel="stylesheet" href="css/views/contact.css">
+  <link rel="stylesheet" href="css/views/area-list.css">
+  <link rel="stylesheet" href="css/views/project.css">
+
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <!-- The page shell. Views fill their containers from js/; DOM order is paint order. -->
+  <div class="page" data-app>
+    <nav class="top-tabs" aria-label="Sections">
+      <button class="top-tabs__tab is-active" type="button" data-action="show-projects">Projects</button>
+      <span class="top-tabs__dot" aria-hidden="true"></span>
+      <button class="top-tabs__tab" type="button" data-action="show-contact">Contact</button>
+    </nav>
+    <div class="page__glow page__glow--top" aria-hidden="true"></div>
+    <div class="page__glow page__glow--bottom" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <div class="site-header__titles">
+        <h1 class="site-header__heading" data-site="heading">Grant Benson</h1>
+        <p class="site-header__subtitle" data-site="subtitle">Projects across AI/ML, games and simulation, and cybersecurity.</p>
+      </div>
+      <div class="mode-toggle" data-mode-toggle>
+        <button class="mode-toggle__option is-active" type="button" data-action="mode-graph">Graph</button>
+        <button class="mode-toggle__option" type="button" data-action="mode-list">List</button>
+      </div>
+    </header>
+
+    <!-- Graph view: js/views/graph.js builds the edges, hubs and nodes inside the world layer -->
+    <div class="stage" data-stage>
+      <div class="world" data-world></div>
+    </div>
+
+    <section class="list-view" data-view="list" hidden></section>
+    <section class="contact-view" data-view="contact" hidden></section>
+
+    <div class="scrim" data-scrim></div>
+
+    <!-- Arcs live out here, not in the stage: the stage is its own stacking context, so
+         nothing inside it can out-stack the scrim -->
+    <button class="arc arc--left" type="button" data-arc="left"><span class="arc__glow"></span><span class="arc__chevron">‹</span></button>
+    <button class="arc arc--right" type="button" data-arc="right"><span class="arc__glow"></span><span class="arc__chevron">›</span></button>
+
+    <aside class="drawer" data-panel>
+      <div class="drawer__body" data-panel-body></div>
+    </aside>
+  </div>
+</body>
+</html>

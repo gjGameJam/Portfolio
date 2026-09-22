@@ -1,0 +1,96 @@
+/* The drawer's project detail: area chip, title, role, description, tags,
+   actions, then the media slots (live embed, videos, gallery) and, for a project
+   in more than one area, the areas it connects. */
+
+.project {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 30px 30px 36px;
+}
+
+.project__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.project__title {
+  margin: 0;
+  font: 400 32px/1.08 var(--font-heading);
+  color: var(--ink-heading);
+  letter-spacing: -.01em;
+}
+
+.project__role {
+  font: 500 12px/1.45 var(--font-body);
+  color: var(--ink-label);
+}
+
+.project__desc {
+  margin: 0;
+  font: 400 15px/1.62 var(--font-body);
+  color: var(--ink-copy);
+  text-wrap: pretty;
+}
+
+.project__pending {
+  margin: 0;
+  font: 400 14px/1.6 var(--font-body);
+  color: var(--ink-muted);
+  font-style: italic;
+}
+
+.project__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.project__actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+/* A media slot: a label, then one or more figures */
+.project__media {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.project__media--embed { gap: 8px; }
+
+.project__figure {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+}
+
+.media-frame {
+  display: block;
+  width: 100%;
+  /* the width and height attributes only set the aspect ratio; without this, the height
+     attribute would also fix the box's height */
+  height: auto;
+  border-radius: 14px;
+  border: 1px solid rgb(var(--line) / .10);
+  background: rgba(8, 14, 10, .6);
+}
+.media-frame--embed { border-color: rgb(var(--line) / .14); }
+
+.project__areas {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 22px;
+  border-top: 1px solid rgb(var(--line) / .10);
+}
+
+.project__area-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
